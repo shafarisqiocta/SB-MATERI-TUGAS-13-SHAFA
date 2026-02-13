@@ -3,6 +3,7 @@ package main
 import (
 	"bioskop-api/config"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -132,7 +133,10 @@ func main() {
 
 	})
 
-	config.ConnectDB()
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // default untuk lokal
+	}
 
-	r.Run(":8080")
+	r.Run(":" + port)
 }
