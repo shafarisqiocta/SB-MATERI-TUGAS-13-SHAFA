@@ -3,6 +3,7 @@ package config
 import (
 	"database/sql"
 	"fmt"
+	"os"
 
 	_ "github.com/lib/pq"
 )
@@ -10,7 +11,15 @@ import (
 var DB *sql.DB
 
 func ConnectDB() {
-	connStr := "host=localhost user=postgres password=test123 dbname=bioskop_db port=5432 sslmode=disable"
+
+	connStr := fmt.Sprintf(
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
+		os.Getenv("PGHOST"),
+		os.Getenv("PGPORT"),
+		os.Getenv("PGUSER"),
+		os.Getenv("PGPASSWORD"),
+		os.Getenv("PGDATABASE"),
+	)
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
