@@ -1,0 +1,12 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "go run main.go"
+```
+
+## 2. **Atau buat `Procfile`** (tanpa extension)
+
+Buat file bernama `Procfile` (tanpa .txt atau apapun), isi:
+```
+web: go run main.go
