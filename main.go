@@ -16,7 +16,19 @@ type Bioskop struct {
 }
 
 func main() {
+	// ⭐ WAJIB: Connect database PERTAMA KALI sebelum apapun
+	config.ConnectDB()
+
 	r := gin.Default()
+
+	// Health check endpoint
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Bioskop API is running!",
+			"status":  "ok",
+		})
+	})
+
 	//req POST
 	r.POST("/bioskop", func(c *gin.Context) {
 		var input Bioskop
@@ -50,6 +62,7 @@ func main() {
 
 		c.JSON(http.StatusOK, input)
 	})
+
 	//req GET all data
 	r.GET("/bioskop", func(c *gin.Context) {
 		rows, err := config.DB.Query("SELECT id,nama,lokasi,rating FROM bioskop")
@@ -71,6 +84,7 @@ func main() {
 		}
 		c.JSON(http.StatusOK, bioskops)
 	})
+
 	//req GET berdasarkan ID
 	r.GET("/bioskop/:id", func(c *gin.Context) {
 		id := c.Param("id")
@@ -84,12 +98,13 @@ func main() {
 		}
 		c.JSON(http.StatusOK, b)
 	})
+
 	//req Update
-	r.PUT("bioskop/:id", func(c *gin.Context) {
+	r.PUT("/bioskop/:id", func(c *gin.Context) {
 		id := c.Param("id")
 
 		var input Bioskop
-		if err := c.ShouldBindBodyWithJSON(&input); err != nil {
+		if err := c.ShouldBindJSON(&input); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
@@ -113,8 +128,8 @@ func main() {
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"message": "Data berhasil diupdate"})
-
 	})
+
 	//Req DELETE
 	r.DELETE("/bioskop/:id", func(c *gin.Context) {
 		id := c.Param("id")
@@ -129,13 +144,12 @@ func main() {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Data tidak ditemukan"})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"Message": "Data berhasil dihapus"})
-
+		c.JSON(http.StatusOK, gin.H{"message": "Data berhasil dihapus"})
 	})
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080" // default untuk lokal
+		port = "8080"
 	}
 
 	r.Run(":" + port)
